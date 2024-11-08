@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AWS DynamoDB Name Submission</title>
+</head>
+<body>
+    <h1>Enter Your Name</h1>
+    <form id="nameForm">
+        <label for="firstName">First Name:</label>
+        <input type="text" id="firstName" name="firstName" required>
+        <br><br>
+
+        <label for="lastName">Last Name:</label>
+        <input type="text" id="lastName" name="lastName" required>
+        <br><br>
+
+        <button type="submit">Submit</button>
+    </form> 
+
+    
+    <p id="responseMessage"></p>
+
+    <script>
+        
+        const apiUrl = 'https://2jt24k8xok.execute-api.us-east-1.amazonaws.com/dev';
+        const apiKey = 'Xlw3N1uk7RaLJwQfLYTjPaFia7Tusoco6hvCoUKT';
+
+        document.getElementById('nameForm').addEventListener('submit', async function(event) {
+            event.preventDefault(); 
+
+            
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+
+            try {
+                
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-api-key': apiKey
+                    },
+                    body: JSON.stringify({ firstName, lastName })
+                });
+
+                const result = await response.json();
+
+                
+                if (response.ok && result.message === "Record inserted successfully") {
+                    document.getElementById('responseMessage').textContent = `Record inserted successfully into DynamoDB, ${firstName} ${lastName}!`;
+                    document.getElementById('responseMessage').style.color = 'green';
+                } else {
+                    document.getElementById('responseMessage').textContent = 'Error: ' + result.message;
+                    document.getElementById('responseMessage').style.color = 'red';
+                }
+            } catch (error) {
+                document.getElementById('responseMessage').textContent = 'Request failed: ' + error.message;
+                document.getElementById('responseMessage').style.color = 'red';
+            }
+
+            
+            document.getElementById('nameForm').reset();
+        });
+    </script>
+</body>
+</html>
